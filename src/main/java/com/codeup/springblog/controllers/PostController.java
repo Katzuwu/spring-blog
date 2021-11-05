@@ -1,7 +1,9 @@
 package com.codeup.springblog.controllers;
 
 import com.codeup.springblog.models.Post;
+import com.codeup.springblog.models.User;
 import com.codeup.springblog.repositories.PostRepository;
+import com.codeup.springblog.repositories.UserRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,11 @@ import java.util.List;
 public class PostController {
 
 	private final PostRepository postDao;
+	private final UserRepository userDao;
 
-	public PostController(PostRepository postDao){
+	public PostController(PostRepository postDao, UserRepository userDao){
 		this.postDao = postDao;
+		this.userDao = userDao;
 	}
 
 	@GetMapping("/posts")
@@ -24,29 +28,34 @@ public class PostController {
 		return "/posts/index";
 	}
 
-	@GetMapping("/posts/{id}")
-	public String returnPostWithID(Model model){
-		Post post = new Post("Want to buy RTX 3080", "Please it's been a year I just want one already");
+	@GetMapping("/posts/show/{id}")
+	public String returnPostWithID(@PathVariable long id, Model model){
+		Post post = postDao.getById(id);
+		User user = post.getUser();
+
 		model.addAttribute("title", post.getTitle());
 		model.addAttribute("body", post.getBody());
+		model.addAttribute("email", user.getEmail());
 		return "/posts/show";
 	}
 
 	@GetMapping("/posts/create")
-	@ResponseBody
-	public String createNewPost(){
-		return "Form for creating post";
+	public String showPostCreateForm(){
+		return "/posts/create";
 	}
 
 	@PostMapping("/posts/create")
-	@ResponseBody
-	public String postCreation(){
-		return "New post created";
+	public String postCreation(@RequestParam String title, @RequestParam String body){
+		User user1 = userDao.getById(1L);
+		Post post = new Post(title, body, user1);
+
+		postDao.save(post);
+		return "redirect:/posts";
 	}
 
 
 	@PostMapping("/posts/delete")
-	public String deletePost(@PathVariable @RequestParam(name = "id") long id) {
+	public String deletePost(@RequestParam(name = "id") long id) {
 
 		Post post = postDao.getById(id);
 		postDao.delete(post);
