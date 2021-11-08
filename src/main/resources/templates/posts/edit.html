@@ -7,17 +7,17 @@
 <body>
 	<h1>Edit your post</h1>
 
-	<form  th:method="POST">
+	<form th:action="@{/posts/{id}/edit(id=${id})}" th:method="POST" th:object="${post}">
 		<div>
 		<label for="title">Title</label>
 			<br>
-		<input id="title" th:name="title" type="text" placeholder="Enter a new title" th:value="${post.title}">
+		<input id="title" th:field="*{title}" placeholder="Enter a new title" th:value="*{title}">
 		</div>
 		<br>
 		<div>
 		<label for="body">Body</label>
 			<br>
-		<textarea id="body" th:name="body" cols="30" rows="10" placeholder="Enter new body content" th:text="${post.body}"></textarea>
+		<textarea id="body" th:field="*{body}" cols="30" rows="10" placeholder="Enter new body content" th:text="*{body}"></textarea>
 		</div>
 		<br>
 		<div>
