@@ -4,6 +4,7 @@ import com.codeup.springblog.models.Post;
 import com.codeup.springblog.models.User;
 import com.codeup.springblog.repositories.PostRepository;
 import com.codeup.springblog.repositories.UserRepository;
+import com.codeup.springblog.services.EmailService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,12 @@ public class PostController {
 
 	private final PostRepository postDao;
 	private final UserRepository userDao;
+	private final EmailService emailService;
 
-	public PostController(PostRepository postDao, UserRepository userDao){
+	public PostController(PostRepository postDao, UserRepository userDao, EmailService emailService){
 		this.postDao = postDao;
 		this.userDao = userDao;
+		this.emailService = emailService;
 	}
 
 	@GetMapping("/posts")
@@ -50,6 +53,7 @@ public class PostController {
 		User user1 = userDao.getById(1L);
 		post.setUser(user1);
 		postDao.save(post);
+		emailService.prepareAndSend(post, "You created: " + post.getTitle(), post.getBody());
 		return "redirect:/posts";
 	}
 
@@ -74,6 +78,7 @@ public class PostController {
 		editPost.setTitle(post.getTitle());
 		editPost.setBody(post.getBody());
 		postDao.save(editPost);
+		emailService.prepareAndSend(editPost, "You edited your post. It now says : " + editPost.getTitle(), editPost.getBody());
 		return "redirect:/posts";
 	}
 }
