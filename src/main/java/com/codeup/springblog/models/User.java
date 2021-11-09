@@ -10,13 +10,13 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column(columnDefinition = "varchar(30)", nullable = false)
+	@Column(columnDefinition = "varchar(255)", nullable = false)
 	private String username;
 
 	@Column(columnDefinition = "varchar(200)", nullable = false)
 	private String email;
 
-	@Column(columnDefinition = "varchar(30)", nullable = false)
+	@Column(columnDefinition = "varchar(255)", nullable = false)
 	private String password;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
@@ -38,6 +38,13 @@ public class User {
 		this.email = email;
 		this.password = password;
 		this.userPosts = userPosts;
+	}
+
+	public User(User copy) {
+		id = copy.id; // This line is SUPER important! Many things won't work if it's absent
+		email = copy.email;
+		username = copy.username;
+		password = copy.password;
 	}
 
 	public long getId() {
