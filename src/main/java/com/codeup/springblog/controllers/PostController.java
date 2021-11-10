@@ -68,8 +68,14 @@ public class PostController {
 
 	@GetMapping("/posts/{id}/edit")
 	public String returnEditView(@PathVariable long id, Model viewModel){
-		viewModel.addAttribute("post", postDao.getById(id));
-		return "/posts/edit";
+		User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User author = userDao.getById(principal.getId());
+		if(author.getId() == postDao.getById(id).getUser().getId()) {
+			viewModel.addAttribute("post", postDao.getById(id));
+			return "/posts/edit";
+		} else {
+			return "/login/login";
+		}
 	}
 
 	@PostMapping("/posts/{id}/edit")
